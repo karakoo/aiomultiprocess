@@ -57,14 +57,14 @@ class PoolWorker(Process):
             concurrency: int = CHILD_CONCURRENCY,
             *,
             initializer: Optional[Callable] = None,
-            initargs: Sequence[Any] = (),
+            init_args: Sequence[Any] = (),
             loop_initializer: Optional[LoopInitializer] = None,
             exception_handler: Optional[Callable[[BaseException], None]] = None,
     ) -> None:
         super().__init__(
             target=self.run,
             initializer=initializer,
-            initargs=initargs,
+            init_args=init_args,
             loop_initializer=loop_initializer,
         )
         self.concurrency = max(1, concurrency)
@@ -260,7 +260,7 @@ class Pool:
             self.maxtasksperchild,
             self.childconcurrency,
             initializer=self.initializer,
-            initargs=self.initargs,
+            init_args=self.initargs,
             loop_initializer=self.loop_initializer,
             exception_handler=self.exception_handler,
         )

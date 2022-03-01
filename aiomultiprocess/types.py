@@ -36,7 +36,7 @@ class Unit(NamedTuple):
     kwargs: Dict[str, Any]
     namespace: Any
     initializer: Optional[Callable] = None
-    initargs: Sequence[Any] = ()
+    init_args: Sequence[Any] = ()
     loop_initializer: Optional[LoopInitializer] = None
     runner: Optional[Callable] = None
 

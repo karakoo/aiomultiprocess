@@ -1,10 +1,10 @@
-from platform import system as sys_name
 import asyncio
 import logging
 import multiprocessing
 import multiprocessing.managers
 import os
 import sys
+from platform import system as sys_name
 from typing import (
     Any,
     Callable,
@@ -93,7 +93,7 @@ class Process:
             *,
             daemon: bool = None,
             initializer: Optional[Callable] = None,
-            initargs: Sequence[Any] = (),
+            init_args: Sequence[Any] = (),
             loop_initializer: Optional[Callable] = None,
             process_target: Optional[Callable] = None,
     ) -> None:
@@ -114,7 +114,7 @@ class Process:
             kwargs=kwargs or {},
             namespace=get_manager().Namespace(),
             initializer=initializer,
-            initargs=initargs,
+            init_args=init_args,
             loop_initializer=loop_initializer,
         )
         self.aio_process = context.Process(
@@ -144,7 +144,7 @@ class Process:
             asyncio.set_event_loop(loop)
 
             if unit.initializer:
-                unit.initializer(*unit.initargs)
+                unit.initializer(*unit.init_args)
 
             result: R = loop.run_until_complete(
                 unit.target(*unit.args, **unit.kwargs))
