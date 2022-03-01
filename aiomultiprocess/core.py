@@ -1,21 +1,26 @@
-# Copyright 2018 John Reese
-# Licensed under the MIT license
-
+from platform import system as sys_name
 import asyncio
 import logging
 import multiprocessing
 import multiprocessing.managers
 import os
 import sys
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Sequence,
+)
 
-from .types import Context, R, Unit
+from .types import (
+    Context,
+    R,
+    Unit,
+)
 
-DEFAULT_START_METHOD = "spawn"
+DEFAULT_START_METHOD = "forkserver" if sys_name() == 'Linux' else 'spawn'
 
-# shared context for all multiprocessing primitives, for platform compatibility
-# "spawn" is default/required on windows and mac, but can't execute non-global functions
-# see https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
 context = multiprocessing.get_context(DEFAULT_START_METHOD)
 _manager = None
 
@@ -35,16 +40,17 @@ def set_start_method(method: Optional[str] = DEFAULT_START_METHOD) -> None:
     """
     Set the start method and context used for future processes/pools.
 
-    When given no parameters (`set_context()`), will default to using the "spawn" method
-    as this provides a predictable set of features and compatibility across all major
-    platforms, and trades a small cost on process startup for potentially large savings
-    on memory usage of child processes.
+    When given no parameters (`set_context()`), will default to using the
+    "spawn"  method as this provides a predictable set of features and
+    compatibility across all major platforms, and trades a small cost on process
+    startup for potentially large savings on memory usage of child processes.
 
-    Passing an explicit string (eg, "fork") will force aiomultiprocess to use the given
-    start method instead of "spawn".
+    Passing an explicit string (eg, "fork") will force aiomultiprocess to use
+    the given start method instead of "spawn".
 
-    Passing an explicit `None` value will force aiomultiprocess to use CPython's default
-    start method for the current platform rather than defaulting to "spawn".
+    Passing an explicit `None` value will force aiomultiprocess to use CPython's
+    default start method for the current platform rather than defaulting to
+    "spawn".
 
     See the official multiprocessing documentation for details on start methods:
     https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -78,18 +84,18 @@ class Process:
     """Execute a coroutine on a separate process."""
 
     def __init__(
-        self,
-        group: None = None,
-        target: Callable = None,
-        name: str = None,
-        args: Sequence[Any] = None,
-        kwargs: Dict[str, Any] = None,
-        *,
-        daemon: bool = None,
-        initializer: Optional[Callable] = None,
-        initargs: Sequence[Any] = (),
-        loop_initializer: Optional[Callable] = None,
-        process_target: Optional[Callable] = None,
+            self,
+            group: None = None,
+            target: Callable = None,
+            name: str = None,
+            args: Sequence[Any] = None,
+            kwargs: Dict[str, Any] = None,
+            *,
+            daemon: bool = None,
+            initializer: Optional[Callable] = None,
+            initargs: Sequence[Any] = (),
+            loop_initializer: Optional[Callable] = None,
+            process_target: Optional[Callable] = None,
     ) -> None:
         if target is not None and not asyncio.iscoroutinefunction(target):
             raise ValueError("target must be coroutine function")
@@ -98,7 +104,7 @@ class Process:
             raise ValueError("initializer must be synchronous function")
 
         if loop_initializer is not None and asyncio.iscoroutinefunction(
-            loop_initializer
+                loop_initializer
         ):
             raise ValueError("loop_initializer must be synchronous function")
 
@@ -140,7 +146,8 @@ class Process:
             if unit.initializer:
                 unit.initializer(*unit.initargs)
 
-            result: R = loop.run_until_complete(unit.target(*unit.args, **unit.kwargs))
+            result: R = loop.run_until_complete(
+                unit.target(*unit.args, **unit.kwargs))
 
             return result
 

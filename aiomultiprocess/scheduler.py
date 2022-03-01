@@ -1,11 +1,24 @@
-# Copyright 2019 John Reese
-# Licensed under the MIT license
-
 import itertools
-from abc import ABC, abstractmethod
-from typing import Any, Awaitable, Callable, Dict, Iterator, List, Sequence
+from abc import (
+    ABC,
+    abstractmethod,
+)
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Sequence,
+)
 
-from .types import Queue, QueueID, R, TaskID
+from .types import (
+    Queue,
+    QueueID,
+    R,
+    TaskID,
+)
 
 
 class Scheduler(ABC):
@@ -26,11 +39,11 @@ class Scheduler(ABC):
 
     @abstractmethod
     def schedule_task(
-        self,
-        task_id: TaskID,
-        func: Callable[..., Awaitable[R]],
-        args: Sequence[Any],
-        kwargs: Dict[str, Any],
+            self,
+            task_id: TaskID,
+            func: Callable[..., Awaitable[R]],
+            args: Sequence[Any],
+            kwargs: Dict[str, Any],
     ) -> QueueID:
         """
         Given a task, return a queue ID that it should be sent to.
@@ -71,11 +84,11 @@ class RoundRobin(Scheduler):
         self.cycler = itertools.cycle(self.qids)
 
     def schedule_task(
-        self,
-        _task_id: TaskID,
-        _func: Callable[..., Awaitable[R]],
-        _args: Sequence[Any],
-        _kwargs: Dict[str, Any],
+            self,
+            _task_id: TaskID,
+            _func: Callable[..., Awaitable[R]],
+            _args: Sequence[Any],
+            _kwargs: Dict[str, Any],
     ) -> QueueID:
         return next(self.cycler)
 

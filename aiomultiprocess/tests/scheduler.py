@@ -13,7 +13,9 @@ class SchedulerTest(TestCase):
         scheduler.register_process(qid)
 
         for i in range(5):
-            self.assertEqual(scheduler.schedule_task(i, object, tuple(), {}), qid)
+            self.assertEqual(
+                scheduler.schedule_task(i, object, tuple(), {}), qid
+            )
 
     def test_roundrobin_scheduler_two(self):
         scheduler = amp.RoundRobin()
@@ -23,5 +25,9 @@ class SchedulerTest(TestCase):
         scheduler.register_process(q2)
 
         for i in range(5):
-            self.assertEqual(scheduler.schedule_task(i, object, tuple(), {}), q1)
-            self.assertEqual(scheduler.schedule_task(i, object, tuple(), {}), q2)
+            self.assertEqual(scheduler.schedule_task(
+                i, object, tuple(), {}), q1
+            )
+            self.assertEqual(scheduler.schedule_task(
+                i, object, tuple(), {}), q2
+            )

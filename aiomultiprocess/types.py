@@ -1,6 +1,3 @@
-# Copyright 2018 John Reese
-# Licensed under the MIT license
-
 import multiprocessing
 from asyncio import BaseEventLoop
 from typing import (

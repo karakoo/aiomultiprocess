@@ -1,6 +1,3 @@
-# Copyright 2019 John Reese
-# Licensed under the MIT license
-
 import asyncio
 import logging
 import os
@@ -20,8 +17,14 @@ from typing import (
     TypeVar,
 )
 
-from .core import get_context, Process
-from .scheduler import RoundRobin, Scheduler
+from .core import (
+    get_context,
+    Process,
+)
+from .scheduler import (
+    RoundRobin,
+    Scheduler,
+)
 from .types import (
     LoopInitializer,
     PoolTask,
@@ -34,8 +37,10 @@ from .types import (
     TracebackStr,
 )
 
-MAX_TASKS_PER_CHILD = 0  # number of tasks to execute before recycling a child process
-CHILD_CONCURRENCY = 16  # number of tasks to execute simultaneously per child process
+# number of tasks to execute before recycling a child process
+MAX_TASKS_PER_CHILD = 0
+# number of tasks to execute simultaneously per child process
+CHILD_CONCURRENCY = 16
 _T = TypeVar("_T")
 
 log = logging.getLogger(__name__)
@@ -45,16 +50,16 @@ class PoolWorker(Process):
     """Individual worker process for the async pool."""
 
     def __init__(
-        self,
-        tx: Queue,
-        rx: Queue,
-        ttl: int = MAX_TASKS_PER_CHILD,
-        concurrency: int = CHILD_CONCURRENCY,
-        *,
-        initializer: Optional[Callable] = None,
-        initargs: Sequence[Any] = (),
-        loop_initializer: Optional[LoopInitializer] = None,
-        exception_handler: Optional[Callable[[BaseException], None]] = None,
+            self,
+            tx: Queue,
+            rx: Queue,
+            ttl: int = MAX_TASKS_PER_CHILD,
+            concurrency: int = CHILD_CONCURRENCY,
+            *,
+            initializer: Optional[Callable] = None,
+            initargs: Sequence[Any] = (),
+            loop_initializer: Optional[LoopInitializer] = None,
+            exception_handler: Optional[Callable[[BaseException], None]] = None,
     ) -> None:
         super().__init__(
             target=self.run,
@@ -99,7 +104,8 @@ class PoolWorker(Process):
 
             # return results and/or exceptions when completed
             done, _ = await asyncio.wait(
-                pending.keys(), timeout=0.05, return_when=asyncio.FIRST_COMPLETED
+                pending.keys(), timeout=0.05,
+                return_when=asyncio.FIRST_COMPLETED
             )
             for future in done:
                 tid = pending.pop(future)
@@ -149,16 +155,16 @@ class Pool:
     """Execute coroutines on a pool of child processes."""
 
     def __init__(
-        self,
-        processes: int = None,
-        initializer: Callable[..., None] = None,
-        initargs: Sequence[Any] = (),
-        maxtasksperchild: int = MAX_TASKS_PER_CHILD,
-        childconcurrency: int = CHILD_CONCURRENCY,
-        queuecount: Optional[int] = None,
-        scheduler: Scheduler = None,
-        loop_initializer: Optional[LoopInitializer] = None,
-        exception_handler: Optional[Callable[[BaseException], None]] = None,
+            self,
+            processes: int = None,
+            initializer: Callable[..., None] = None,
+            initargs: Sequence[Any] = (),
+            maxtasksperchild: int = MAX_TASKS_PER_CHILD,
+            childconcurrency: int = CHILD_CONCURRENCY,
+            queuecount: Optional[int] = None,
+            scheduler: Scheduler = None,
+            loop_initializer: Optional[LoopInitializer] = None,
+            exception_handler: Optional[Callable[[BaseException], None]] = None,
     ) -> None:
         self.context = get_context()
 
@@ -262,10 +268,10 @@ class Pool:
         return process
 
     def queue_work(
-        self,
-        func: Callable[..., Awaitable[R]],
-        args: Sequence[Any],
-        kwargs: Dict[str, Any],
+            self,
+            func: Callable[..., Awaitable[R]],
+            args: Sequence[Any],
+            kwargs: Dict[str, Any],
     ) -> TaskID:
         """
         Add a new work item to the outgoing queue.
@@ -281,7 +287,7 @@ class Pool:
         return task_id
 
     def finish_work(
-        self, task_id: TaskID, value: Any, tb: Optional[TracebackStr]
+            self, task_id: TaskID, value: Any, tb: Optional[TracebackStr]
     ) -> None:
         """
         Mark work items as completed.
@@ -314,10 +320,10 @@ class Pool:
         return [ready[tid] for tid in tids]
 
     async def apply(
-        self,
-        func: Callable[..., Awaitable[R]],
-        args: Sequence[Any] = None,
-        kwds: Dict[str, Any] = None,
+            self,
+            func: Callable[..., Awaitable[R]],
+            args: Sequence[Any] = None,
+            kwds: Dict[str, Any] = None,
     ) -> R:
         """Run a single coroutine on the pool."""
         if not self.running:
@@ -331,10 +337,10 @@ class Pool:
         return results[0]
 
     def map(
-        self,
-        func: Callable[[T], Awaitable[R]],
-        iterable: Sequence[T],
-        # chunksize: int = None,  # todo: implement chunking maybe
+            self,
+            func: Callable[[T], Awaitable[R]],
+            iterable: Sequence[T],
+            # chunksize: int = None,  # todo: implement chunking maybe
     ) -> PoolResult[R]:
         """Run a coroutine once for each item in the iterable."""
         if not self.running:
@@ -344,10 +350,10 @@ class Pool:
         return PoolResult(self, tids)
 
     def starmap(
-        self,
-        func: Callable[..., Awaitable[R]],
-        iterable: Sequence[Sequence[T]],
-        # chunksize: int = None,  # todo: implement chunking maybe
+            self,
+            func: Callable[..., Awaitable[R]],
+            iterable: Sequence[Sequence[T]],
+            # chunksize: int = None,  # todo: implement chunking maybe
     ) -> PoolResult[R]:
         """Run a coroutine once for each sequence of items in the iterable."""
         if not self.running:

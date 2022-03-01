@@ -6,7 +6,7 @@ import time
 from unittest import TestCase
 
 import aiomultiprocess as amp
-from .base import perf_test
+from aiomultiprocess.tests.base import perf_test
 
 PERF_SETS = [
     # sleep, tasks, processes, concurrency
